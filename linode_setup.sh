@@ -1,0 +1,92 @@
+#!/bin/bash 
+
+# INPUT PARS
+# ==========
+
+param=$1
+
+if [ "$param" = "ROOT" ]
+then
+    # ROOT SCRIPT
+    # ===========
+    # ssh root@178.79.142.93
+    # scp martin@nihiq.selfip.com:~/code/scripts/linode_setup.sh ~/
+    # chmod 777 linode_setup.sh
+
+    echo "adding new user 'martin'"
+    adduser martin --ingroup sudo
+
+    echo "changing hostname"
+    cp /etc/hostname /etc/hostname.backup
+    hostname -F /etc/hostname    
+
+    echo "changing hosts file"
+    cp /etc/hosts /etc/hosts.backup
+    echo "nhqlinode" > /etc/hostname
+    echo "# Custom setup
+178.79.142.93   nhqlinode.example.com       nhqlinode
+127.0.0.1       localhost.localdomain       localhost
+127.0.1.1       nhqlinode
+::1 nhqlinode localhost6.localdomain6 localhost6
+
+# The following lines are desirable for IPv6 capable hosts
+::1 localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts" > /etc/hosts
+
+   echo "done"
+
+elif [ "$param" = "USER" ]
+then
+    # USER SCRIPT
+    # ===========
+    # ssh martin@178.79.142.93
+
+    # distro update
+    sudo apt-get update
+    sudo apt-get upgrade --show-upgraded
+
+    # change the timezone
+    sudo ln -sf /usr/share/zoneinfo/Europe/Prague /etc/localtime 
+
+    # install htop - monitoring tool
+    sudo apt-get install htop
+
+    # GIT INSTALL
+    sudo apt-get install git git-doc
+    # Transfer all SSH keys
+    scp nihiq.selfip.com:~/.ssh/* ~/.ssh
+    # Transfer git configuration
+    scp nihiq.selfip.com:~/.gitconfig ~/
+    git config --global core.editor vim
+    
+    # DOTFILES FROM GITHUB
+    git clone git@github.com:nihique/dotfiles.git ~/code/dotfiles
+    cp -r ~/code/dotfiles/.git-completion.sh ~/
+    cp -r ~/code/dotfiles/.bashrc ~/
+    cp -r ~/code/dotfiles/.vimrc ~/
+    cp -r ~/code/dotfiles/.vim ~/.vim
+
+    # RVM INSTALL
+    bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
+    source ~/.bashrc
+    type rvm | head -1
+    source ~/.rvm/scripts/rvm
+    type rvm | head -1
+    rvm notes
+
+    # RVM RUBIES, GEMS AND RAILS
+    sudo apt-get install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
+    rvm install 1.9.2
+    rvm use 1.9.2 --default
+    rvm info
+    gem update --system
+    gem install rails
+    gem install sqlite3-ruby
+else
+    echo "No parameter given, nothing done..."
+    echo "  usage: ./linode_setup.sh ROOT|USER"
+fi
