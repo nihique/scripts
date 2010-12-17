@@ -18,11 +18,11 @@ then
 
     echo "changing hostname"
     cp /etc/hostname /etc/hostname.backup
+    echo "nhqlinode" > /etc/hostname
     hostname -F /etc/hostname    
 
     echo "changing hosts file"
     cp /etc/hosts /etc/hosts.backup
-    echo "nhqlinode" > /etc/hostname
     echo "# Custom setup
 178.79.142.93   nhqlinode.example.com       nhqlinode
 127.0.0.1       localhost.localdomain       localhost
