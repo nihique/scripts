@@ -46,8 +46,8 @@ then
     # ssh martin@178.79.142.93
 
     # distro update
-    sudo apt-get update -y
-    sudo apt-get upgrade -y --show-upgraded
+    sudo apt-get update -y --force-yes
+    sudo apt-get upgrade -y --force-yes --show-upgraded
 
     # change the timezone
     sudo ln -sf /usr/share/zoneinfo/Europe/Prague /etc/localtime 
