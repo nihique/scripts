@@ -46,17 +46,17 @@ then
     # ssh martin@178.79.142.93
 
     # distro update
-    sudo apt-get update
-    sudo apt-get upgrade --show-upgraded
+    sudo apt-get update -y
+    sudo apt-get upgrade -y --show-upgraded
 
     # change the timezone
     sudo ln -sf /usr/share/zoneinfo/Europe/Prague /etc/localtime 
 
     # install htop - monitoring tool
-    sudo apt-get install htop
+    sudo apt-get install -y htop
 
     # GIT INSTALL
-    sudo apt-get install git git-doc
+    sudo apt-get install -y git git-doc
     # Transfer all SSH keys
     scp nihiq.selfip.com:~/.ssh/* ~/.ssh
     # Transfer git configuration
@@ -79,7 +79,7 @@ then
     rvm notes
 
     echo "Installing rvm, rubies, gems and rails..."
-    sudo apt-get install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
+    sudo apt-get install -y build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
     rvm install 1.9.2
     rvm use 1.9.2 --default
     rvm info
@@ -89,7 +89,7 @@ then
 
     echo "Installing passenger and nginx..."
     gem install passenger
-    sudo apt-get install libcurl4-openssl-dev
+    sudo apt-get install -y libcurl4-openssl-dev
     rvmsudo passenger-install-nginx-module
     rvmsudo passenger start --port=80 --user=martin --environment=production --daemonize 
     rvmsudo passenger stop --port=80
