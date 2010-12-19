@@ -99,6 +99,41 @@ then
     sudo /usr/sbin/update-rc.d -f nginx defaults
     sudo /etc/init.d/nginx start
 
+    echo "Installing rails test website..."
+    mkdir ~/srv
+    cd ~/srv
+    rails new rails_test
+    cd ~/rails_test
+    bundle install
+    bundle update
+    cd ~/
+    sudo sh -c 'echo "worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    passenger_root /home/martin/.rvm/gems/ruby-1.9.2-p0/gems/passenger-3.0.2;
+    passenger_ruby /home/martin/.rvm/wrappers/ruby-1.9.2-p0/ruby;
+
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+
+    server {
+        listen 80;
+        server_name localhost;
+        root /home/martin/srv/rails_test/public;
+        passenger_enabled on;
+        rails_env development;
+    }
+}" > /opt/nginx/conf/nginx.conf'
+    sudo /etc/init.d/nginx restart
+
+
+
  
 else
     echo "No parameter given, nothing done..."
