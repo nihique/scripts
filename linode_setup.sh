@@ -78,7 +78,7 @@ then
     type rvm | head -1
     rvm notes
 
-    # RVM RUBIES, GEMS AND RAILS
+    echo "Installing rvm, rubies, gems and rails..."
     sudo apt-get install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
     rvm install 1.9.2
     rvm use 1.9.2 --default
@@ -86,6 +86,20 @@ then
     gem update --system
     gem install rails
     gem install sqlite3-ruby
+
+    echo "Installing passenger and nginx..."
+    gem install passenger
+    sudo apt-get install libcurl4-openssl-dev
+    rvmsudo passenger-install-nginx-module
+    rvmsudo passenger start --port=80 --user=martin --environment=production --daemonize 
+    rvmsudo passenger stop --port=80
+    wget http://library.linode.com/web-servers/nginx/installation/reference/init-deb.sh
+    sudo mv init-deb.sh /etc/init.d/nginx
+    sudo chmod +x /etc/init.d/nginx
+    sudo /usr/sbin/update-rc.d -f nginx defaults
+    sudo /etc/init.d/nginx start
+
+ 
 else
     echo "No parameter given, nothing done..."
     echo "  usage: ./linode_setup.sh ROOT|USER"
