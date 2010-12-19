@@ -53,10 +53,10 @@ then
     sudo ln -sf /usr/share/zoneinfo/Europe/Prague /etc/localtime 
 
     # install htop - monitoring tool
-    sudo apt-get install -y htop
+    sudo apt-get install -y --force-yes htop
 
     # GIT INSTALL
-    sudo apt-get install -y git git-doc
+    sudo apt-get install -y --force-yes git git-doc
     # Transfer all SSH keys
     scp nihiq.selfip.com:~/.ssh/* ~/.ssh
     # Transfer git configuration
@@ -70,6 +70,14 @@ then
     cp -r ~/code/dotfiles/.vimrc ~/
     cp -r ~/code/dotfiles/.vim ~/.vim
 
+    # SCRIPTS FROM GITHUB
+    git clone git@github.com:nihique/scripts.git ~/code/scripts
+
+    # FAIL2BAN
+    sudo apt-get install -y --force-yes fail2ban
+    sudo cp ~/code/scripts/jail.conf /etc/fail2ban/jail.conf
+    sudo /etc/init.d/fail2ban restart
+
     # RVM INSTALL
     bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
     source ~/.bashrc
@@ -79,7 +87,7 @@ then
     rvm notes
 
     echo "Installing rvm, rubies, gems and rails..."
-    sudo apt-get install -y build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
+    sudo apt-get install -y --force-yes build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
     rvm install 1.9.2
     rvm use 1.9.2 --default
     rvm info
@@ -89,7 +97,7 @@ then
 
     echo "Installing passenger and nginx..."
     gem install passenger
-    sudo apt-get install -y libcurl4-openssl-dev
+    sudo apt-get install -y --force-yes libcurl4-openssl-dev
     rvmsudo passenger-install-nginx-module
     rvmsudo passenger start --port=80 --user=martin --environment=production --daemonize 
     rvmsudo passenger stop --port=80
