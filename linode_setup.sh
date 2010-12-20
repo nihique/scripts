@@ -13,15 +13,15 @@ then
     # scp martin@nihiq.selfip.com:~/code/scripts/linode_setup.sh ~/
     # chmod 777 linode_setup.sh
 
-    echo "adding new user 'martin'"
+    echo "ADDING NEW USER 'martin'"
     adduser martin --ingroup sudo
 
-    echo "changing hostname"
+    echo "HOSTNAME SETUP"
     cp /etc/hostname /etc/hostname.backup
     echo "nhqlinode" > /etc/hostname
     hostname -F /etc/hostname    
 
-    echo "changing hosts file"
+    echo "HOSTS SETUP"
     cp /etc/hosts /etc/hosts.backup
     echo "# Custom setup
 178.79.142.93   nhqlinode.example.com       nhqlinode
@@ -37,48 +37,41 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts" > /etc/hosts
 
-   echo "done"
-
 elif [ "$param" = "USER" ]
 then
     # USER SCRIPT
     # ===========
     # ssh martin@178.79.142.93
 
-    # distro update
+    echo "DISTRO UPDATE"
     sudo apt-get update -y --force-yes
     sudo apt-get upgrade -y --force-yes --show-upgraded
 
-    # change the timezone
+    echo "CHANGING TIMEZONE"
     sudo ln -sf /usr/share/zoneinfo/Europe/Prague /etc/localtime 
 
-    # install htop - monitoring tool
+    echo "HTOP INSTALL"
     sudo apt-get install -y --force-yes htop
 
-    # GIT INSTALL
+    echo "GIT INSTALL"
     sudo apt-get install -y --force-yes git git-doc
-    # Transfer all SSH keys
+    # transfer all ssh keys - required for git
     scp nihiq.selfip.com:~/.ssh/* ~/.ssh
-    # Transfer git configuration
+    # transfer git configuration
     scp nihiq.selfip.com:~/.gitconfig ~/
     git config --global core.editor vim
     
-    # DOTFILES FROM GITHUB
+    echo "DOTFILES FROM GITHUB"
     git clone git@github.com:nihique/dotfiles.git ~/code/dotfiles
     cp -r ~/code/dotfiles/.git-completion.sh ~/
     cp -r ~/code/dotfiles/.bashrc ~/
     cp -r ~/code/dotfiles/.vimrc ~/
     cp -r ~/code/dotfiles/.vim ~/.vim
 
-    # SCRIPTS FROM GITHUB
+    echo "SCRIPTS FROM GITHUB"
     git clone git@github.com:nihique/scripts.git ~/code/scripts
 
-    # FAIL2BAN
-    sudo apt-get install -y --force-yes fail2ban
-    sudo cp ~/code/scripts/jail.conf /etc/fail2ban/jail.conf
-    sudo /etc/init.d/fail2ban restart
-
-    # RVM INSTALL
+    echo "RVM INSTALL"
     bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
     source ~/.bashrc
     type rvm | head -1
@@ -86,7 +79,7 @@ then
     type rvm | head -1
     rvm notes
 
-    echo "Installing rvm, rubies, gems and rails..."
+    echo "RUBY, GEMS, RAILS INSTALL"
     sudo apt-get install -y --force-yes build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
     rvm install 1.9.2
     rvm use 1.9.2 --default
@@ -95,7 +88,20 @@ then
     gem install rails
     gem install sqlite3-ruby
 
-    echo "Installing passenger and nginx..."
+    echo "FAIL2BAN INSTALL"
+    sudo apt-get install -y --force-yes fail2ban
+    sudo cp ~/code/scripts/jail.conf /etc/fail2ban/jail.conf
+    # repairing startup problems in fail2ban client
+    sudo ruby -e '
+        file     = "/usr/bin/fail2ban-client"
+        line1    = "\t\tfor c in cmd:\n"
+        line2    = "\t\t\tbeautifier.setInputCmd(c)\n"
+        new_line = "\t\t\ttime.sleep(0.1)\n"
+        replaced = File.read(file).sub("#{line1}#{line2}", "#{line1}#{new_line}#{line2}")
+        File.open(file, "w") { |f| f.write(replaced) } '
+    sudo /etc/init.d/fail2ban restart
+
+    echo "PASSENGER AND NGINX INSTALL"
     gem install passenger
     sudo apt-get install -y --force-yes libcurl4-openssl-dev
     rvmsudo passenger-install-nginx-module
@@ -107,7 +113,7 @@ then
     sudo /usr/sbin/update-rc.d -f nginx defaults
     sudo /etc/init.d/nginx start
 
-    echo "Installing rails test website..."
+    echo "RAILS TEST DEPLOYMENT UNDER NGINX"
     mkdir ~/srv
     cd ~/srv
     rails new rails_test
@@ -139,9 +145,6 @@ http {
     }
 }" > /opt/nginx/conf/nginx.conf'
     sudo /etc/init.d/nginx restart
-
-
-
  
 else
     echo "No parameter given, nothing done..."
