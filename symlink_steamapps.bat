@@ -11,7 +11,6 @@ rd "%TARGETDIR%\runaway a road adventure"
 rd "%TARGETDIR%\the secret of monkey island special edition"
 rd "%TARGETDIR%\titan quest"
 rd "%TARGETDIR%\titan quest immortal throne"
-"%TARGETDIR%\eye"
 echo Done
 
 echo Creating new symbolic links...
@@ -21,5 +20,4 @@ mklink /D "%TARGETDIR%\runaway a road adventure"  "%CWD%\runaway a road adventur
 mklink /D "%TARGETDIR%\the secret of monkey island special edition"  "%CWD%\the secret of monkey island special edition"
 mklink /D "%TARGETDIR%\titan quest"  "%CWD%\titan quest"
 mklink /D "%TARGETDIR%\titan quest immortal throne"  "%CWD%\titan quest immortal throne"
-mklink /D "%TARGETDIR%\eye"  "%CWD%\eye"
 echo Done
