@@ -3,7 +3,7 @@
 	email = kovarik.martin@gmail.com
 [github]
 	user = nihique
-	token = 7a9b663b8240f0042a464b3c344c40b7
+	token = add-your-token-here
 [gui]
 	fontdiff = -family \"Envy Code R\" -size 10 -weight normal -slant roman -underline 0 -overstrike 0
 [diff]
